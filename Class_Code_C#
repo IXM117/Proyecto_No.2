@@ -1,0 +1,25 @@
+using System;
+using System.Collections.Generic;
+public class CuentaBancaria
+{
+    public string NumeroCuenta { get; set; }
+    public string NombreTitular { get; set; }
+    public string TipoDeCuenta { get; set; }
+    public decimal Saldo { get; set; }
+    public void Depositar(decimal cantidad) { Saldo += cantidad;}
+    public bool Retirar(decimal cantidad)
+    {
+        if (Saldo >= cantidad) { Saldo -= cantidad; return true;}
+        else {return false;}
+    }
+    public decimal ConsultarSaldo() { return Saldo; }
+}
+public class Banco
+{
+    private List<CuentaBancaria> Cuentas { get; set; }
+    public Banco() {this.Cuentas = new List<CuentaBancaria>(); }
+    public void AgregarCuenta(CuentaBancaria cuenta) {Cuentas.Add(cuenta);}
+    public CuentaBancaria BuscarCuenta(string numeroCuenta){return Cuentas.Find(cuenta => cuenta.NumeroCuenta == numeroCuenta);}
+}
+public class Program
+{ public static void Main(string[] args) {Banco banco = new Banco();} }
