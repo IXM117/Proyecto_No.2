@@ -1,0 +1,178 @@
+using System;
+using System.Collections.Generic;
+//falta añadir usuario especial y credenciales, dependiendo de las instrucciones también un resto de usuarios. 
+public class CuentaBancaria
+{
+    public string NumeroCuenta { get; set; }
+    public string NombreTitular { get; set; }
+    public string TipoCuenta { get; set; }
+    public decimal Saldo { get; set; }
+    public void Depositar(decimal cantidad) {Saldo += cantidad;}
+    public bool Retirar(decimal cantidad)
+    {
+        if (Saldo >= cantidad)
+        {
+            Saldo -= cantidad;
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    public decimal ConsultarSaldo()
+    {
+        return Saldo;
+    }
+}
+public class Banco
+{
+    private List<CuentaBancaria> Cuentas { get; set; }
+
+    public Banco()
+    {
+        this.Cuentas = new List<CuentaBancaria>();
+    }
+    public void AgregarCuenta(CuentaBancaria cuenta)
+    {
+        Cuentas.Add(cuenta);
+    }
+    public CuentaBancaria BuscarCuenta(string numeroCuenta)
+    {
+        return Cuentas.Find(cuenta => cuenta.NumeroCuenta == numeroCuenta);
+    }
+    public void EliminarCuenta(CuentaBancaria cuenta)
+    {
+        Cuentas.Remove(cuenta);
+    }
+}
+
+public class Program
+{
+    public static void Main(string[] args)
+    {
+        Banco banco = new Banco();
+        string opcion = "";
+
+        while (opcion != "4")
+        {
+            Console.WriteLine("1. Registro de Cuentas");
+            Console.WriteLine("2. Operaciones Bancarias");
+            Console.WriteLine("3. Administración de Cuentas");
+            Console.WriteLine("4. Salir");
+            Console.Write("Elige una opción: ");
+            opcion = Console.ReadLine();
+
+            switch (opcion)
+            {
+                case "1": //registrar cuentas
+                    CuentaBancaria nuevaCuenta = new CuentaBancaria();
+                    Console.Write("Ingresa el número de cuenta: ");
+                    nuevaCuenta.NumeroCuenta = Console.ReadLine();
+                    Console.Write("Ingresa el nombre del titular: ");
+                    nuevaCuenta.NombreTitular = Console.ReadLine();
+                    Console.Write("Ingresa el tipo de cuenta: ");
+                    nuevaCuenta.TipoCuenta = Console.ReadLine();
+                    Console.Write("Ingresa el saldo inicial: ");
+                    nuevaCuenta.Saldo = decimal.Parse(Console.ReadLine());
+                    banco.AgregarCuenta(nuevaCuenta);
+                    break;
+                case "2"://operaciones bancarias
+                    Console.Write("Ingresa el número de cuenta: ");
+                    string numeroCuenta = Console.ReadLine();
+                    CuentaBancaria cuenta = banco.BuscarCuenta(numeroCuenta);
+                    if (cuenta != null)
+                    {
+                        Console.WriteLine("1. Depositar dinero");
+                        Console.WriteLine("2. Retirar dinero");
+                        Console.WriteLine("3. Consultar saldo");
+                        Console.Write("Elige una operación: ");
+                        string operacion = Console.ReadLine();
+                        switch (operacion)
+                        {
+                            case "1":
+                                Console.Write("Ingresa la cantidad a depositar: ");
+                                decimal deposito = decimal.Parse(Console.ReadLine());
+                                cuenta.Depositar(deposito);
+                                break;
+                            case "2":
+                                Console.Write("Ingresa la cantidad a retirar: ");
+                                decimal retiro = decimal.Parse(Console.ReadLine());
+                                if (!cuenta.Retirar(retiro))
+                                {
+                                    Console.WriteLine("Saldo insuficiente.");
+                                }
+                                break;
+                            case "3":
+                                Console.WriteLine($"El saldo de la cuenta es: {cuenta.ConsultarSaldo()}");
+                                break;
+                            default:
+                                Console.WriteLine("Operación no válida.");
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Cuenta no encontrada.");
+                    }
+                    break;
+                case "3"://Administrar cuenta (falta usuario especial e inicio de sesión)
+                    Console.Write("Ingresa el número de cuenta: ");
+                    string numeroCuentaAdmin = Console.ReadLine();
+                    CuentaBancaria cuentaAdmin = banco.BuscarCuenta(numeroCuentaAdmin);
+                    if (cuentaAdmin != null)
+                    {
+                        Console.WriteLine("1. Mostrar detalles de la cuenta");
+                        Console.WriteLine("2. Modificar datos de la cuenta");
+                        Console.WriteLine("3. Eliminar cuenta");
+                        Console.WriteLine("4. Ajustar saldo de la cuenta");
+                        Console.Write("Elige una operación: ");
+                        string operacionAdmin = Console.ReadLine();
+                        switch (operacionAdmin)
+                        {
+                            case "1":
+                                Console.WriteLine($"Número de Cuenta: {cuentaAdmin.NumeroCuenta}");
+                                Console.WriteLine($"Nombre del Titular: {cuentaAdmin.NombreTitular}");
+                                Console.WriteLine($"Tipo de Cuenta: {cuentaAdmin.TipoCuenta}");
+                                Console.WriteLine($"Saldo: {cuentaAdmin.Saldo}");
+                                break;
+                            case "2":
+                                Console.Write("Ingresa el nuevo nombre del titular: ");
+                                cuentaAdmin.NombreTitular = Console.ReadLine();
+                                Console.Write("Ingresa el nuevo tipo de cuenta: ");
+                                cuentaAdmin.TipoCuenta = Console.ReadLine();
+                                Console.Write("Ingresa el nuevo saldo inicial: ");
+                                decimal nuevoSaldoInicial = decimal.Parse(Console.ReadLine());
+                                cuentaAdmin.Saldo = nuevoSaldoInicial;
+                                Console.WriteLine("Los datos de la cuenta han sido actualizados exitosamente.");
+                                break;
+                            case "3":
+                                banco.EliminarCuenta(cuentaAdmin);
+                                Console.WriteLine("Cuenta eliminada exitosamente.");
+                                break;
+                            case "4":
+                                Console.Write("Ingresa el nuevo saldo de la cuenta: ");
+                                decimal nuevoSaldo = decimal.Parse(Console.ReadLine());
+                                cuentaAdmin.Saldo = nuevoSaldo;
+                                break;
+                            default:
+                                Console.WriteLine("Operación no válida.");
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Cuenta no encontrada.");
+                    }
+                    break;
+                case "4":
+                    Console.WriteLine("Saliendo del programa...");
+                    break;
+                default:
+                    Console.WriteLine("Opción no válida. Por favor, elige una opción del menú.");
+                    break;
+            }
+        }
+    }
+}
